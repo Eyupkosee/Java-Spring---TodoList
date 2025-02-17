@@ -9,6 +9,7 @@ import com.example.todos.business.abstracts.TodoService;
 import com.example.todos.business.dto.request.CreateTodoRequest;
 import com.example.todos.business.dto.request.UpdateTodoRequest;
 import com.example.todos.business.dto.response.GetAllTodoResponse;
+import com.example.todos.business.rules.TodoBusinessRules;
 import com.example.todos.dataAccess.TodoRepository;
 import com.example.todos.entity.Todo;
 
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 public class TodoManager implements TodoService{
 	
 	private TodoRepository todoRepository; 
+	private TodoBusinessRules todoBusinessRules;
 	
 
 	@Override
@@ -75,8 +77,10 @@ public class TodoManager implements TodoService{
 
 	@Override
 	public Todo getTodoById(Integer id) {
-		Todo myTodo = todoRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Todo not found")); // ID bulunamazsa hata fırlatır		
+		
+		this.todoBusinessRules.checkIfTodoIdNotExists(id);
+		
+		Todo myTodo = todoRepository.findById(id).orElse(null);
 		
 		return myTodo;
 	}
